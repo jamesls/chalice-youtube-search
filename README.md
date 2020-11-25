@@ -9,6 +9,9 @@ for more details, but as a high-level overview, it will use the recommended
 scoring algorithm in the linked article to send you weekly email reports
 of the highest ranking youtube videos.
 
+<img width="911" alt="email-screenshot" src="https://user-images.githubusercontent.com/368057/100179717-97217a80-2ea4-11eb-9fd5-463feee73133.png">
+
+
 This project will deploy two AWS Lambdas.  One Lambda function can be can run
 on demand to allow you to get immediate results using the scored rankings.
 The other Lambda function is scheduled to run once a week that generates
