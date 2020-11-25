@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+import boto3
+import json
+import getpass
+
+CONFIG_KEY = '/youtube-searcher/api-key'
+
+
+def prompt_for_param(client):
+    value = getpass.getpass("Enter Youtube API Key: ").strip()
+    client.put_parameter(Name=CONFIG_KEY, Value=value,
+                         Type='SecureString', Overwrite=True)
+
+
+def update_config_file():
+    sts = boto3.client('sts')
+    account_id = sts.get_caller_identity()['Account']
+    region = sts.meta.region_name
+    policy = {
+        'Version': '2012-10-17',
+        'Statement': [
+            {"Effect": "Allow",
+             "Action": [
+                 "ses:SendEmail"
+             ],
+             "Resource": [
+                 "*"
+             ],
+             "Sid": "193c0565ad0e4c50a3dae5e4e6e63dfd"},
+            {'Effect': 'Allow',
+             'Action': ['ssm:GetParameter'],
+             'Resource': [
+                 f'arn:aws:ssm:{region}:{account_id}:parameter{CONFIG_KEY}'
+             ],
+             'Sid': 'AllowSSMParamAccess',
+            }
+        ]
+    }
+    with open('.chalice/policy-dev.json', 'w') as f:
+        f.write(json.dumps(policy, indent=2))
+
+
+def main():
+    client = boto3.client('ssm')
+    try:
+        client.get_parameter(Name=CONFIG_KEY)
+        result = input("Youtube API key is already configured.  Replace it? [y/N] ")
+        if result.strip().lower().startswith('y'):
+            prompt_for_param(client)
+    except client.exceptions.ParameterNotFound:
+        prompt_for_param(client)
+    update_config_file()
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ses:SendEmail"
+      ],
+      "Resource": [
+        "*"
+      ],
+      "Sid": "193c0565ad0e4c50a3dae5e4e6e63dfd"
+    }
+  ]
+}
